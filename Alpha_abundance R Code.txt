@@ -1,0 +1,24 @@
+setwd("D:/1/R") #设置工作目录
+library(vegan)
+library(picante)
+otu <- read.csv("allgenes.csv",header=T,row.names=1,encoding = "UTF-8") #读取otu表格
+otu<-t(otu) #转置
+count <- otu
+count <- ceiling(otu) #向上取整
+Shannon.Wiener=diversity(count,"shannon") #计算shannon.wiener指数
+Simpson=diversity(count,"simpson") #计算simpson指数
+InSimpson=diversity(count,"inv")  #计算invers simpson指数
+S=specnumber(count)  #计算物种累计数
+plot(S)  #显示物种累计数结果
+J=Shannon.Wiener/log(S)  #计算Pielou均匀度指数
+richness.1 <- estimateR(count)[1, ]  #计算richness指数
+richness <- rowSums(count > 0)  #计算richness指数（二选一）
+Chao1  <- estimateR(count)[2, ]  #计算chao1指数
+ACE  <- estimateR(count)[4, ] #计算ACE指数
+write.csv(Shannon.Wiener, "./allg_Shannon1.csv")#导出结果
+write.csv(Simpson, "./allg_Simpson1.csv")
+write.csv(J, "./allg_Pielou1.csv")
+write.csv(richness, "./allg_richness1.csv")
+write.csv(Chao1, "./allg_Chao11.csv")
+write.csv(ACE, "./allg_ACE1.csv")
+
