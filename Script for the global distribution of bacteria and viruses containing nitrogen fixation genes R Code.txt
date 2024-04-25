@@ -1,0 +1,26 @@
+tempdir <- function() "D:/R-4.1.2/downloaded_packages"
+unlockBinding("tempdir", baseenv())
+utils::assignInNamespace("tempdir", tempdir, ns="base", envir=baseenv())
+assign("tempdir", tempdir, baseenv())
+lockBinding("tempdir", baseenv())
+setwd('D://Rdatazw/gudan')
+
+gudan<-read.csv("Distribution of viral or bacterial nitrogen fixation genes.csv",row.names = 1,header = T,encoding = "UTF-8")
+library(ggplot2)
+library(scatterpie)
+world <- map_data('world')
+p <- ggplot(world, aes(long, lat)) +
+  geom_map(map = world, aes(map_id = region), fill= "white",color = "gray30", linewidth = 0.01, linetype = FALSE) + 
+  coord_quickmap()
+#fill is the color of the area in the map, color is the color of the edge of the area.
+p + geom_scatterpie(aes(x=long, y=lat, r=LN), 
+                    data = gudan, cols=c("nifA","nifD","nifE","nifEN","nifH","nifK","nifL","nifM","nifN","nifU","nifZ","anfK","vnfH"), 
+                    legend_name = "type", color=NA, alpha=1) +
+  #color is the edge color of the pie chart, alpha is the transparency of the pie chart, and cols is the name of the data column selected for the pie chart.
+  geom_scatterpie_legend(gudan$LN, x=-140, y=-60, n=4, labeller = function(x) {round(exp(x-1))}) +
+  theme_bw()+
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = "aliceblue"))
+#panel.background = element_rect(fill = "aliceblue")) is to set the background color.
+ggsave(filename = "Distribution of viral or bacterial nitrogen fixation genes.pdf", width = 7, height = 7, units = "in", dpi = 3000)
