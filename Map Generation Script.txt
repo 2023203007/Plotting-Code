@@ -1,0 +1,56 @@
+library(sf)
+library(ggplot2)
+library(tidyverse)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+# 1.  Acquire world map data (including national borders)
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# 2. Prepare your data (assuming your data is in “bacteria_nitrogen_data.csv”)
+# Data format: country, proportion
+# For example: China,0.25
+#Note: Country names must match the “name” column in the world data (English names).
+
+# Read data
+data <- read.csv("bacteria_nitrogen_data.csv")
+
+# 3. Merge data (ensure country names match)
+world_data <- world %>% 
+  left_join(data, by = c("name" = "country")) %>%
+  mutate(proportion = ifelse(is.na(proportion), 0, proportion))
+
+# 4. Drawing Light-Toned Gradient Maps (Key Optimization)
+map_plot <- ggplot() +
+  geom_sf(data = world_data, 
+          aes(fill = proportion), 
+          color = "white", size = 0.1) +
+  # Use a softer gradient (light version of plasma)
+  scale_fill_gradientn(
+    colours = c("#FDF5E6", "#FCE8D5", "#FBD7C3", "#F8C5B2", "#F5B4A1", "#F2A390"),
+    name = "Nitrogen-fixing gene research proportion",
+    na.value = "lightgrey",
+    guide = guide_colorbar(
+      title.position = "top",
+      title.hjust = 0.5,
+      title.theme = element_text(size = 12, face = "bold")
+    )
+  ) +
+  theme_minimal(base_size = 12) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 12, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold")
+  ) +
+  labs(
+    title = "Proportional Distribution of Global Nitrogen-Fixing Gene Research",
+    caption = "Data Source: Your research data"
+  ) +
+  coord_sf()
+
+# 5. Save high-quality maps
+ggsave("nitrogen_fixation_map.png", plot = map_plot, width = 15, height = 10, dpi = 300)
+ggsave("nitrogen_fixation_map.pdf", plot = map_plot, width = 15, height = 10, dpi = 300)
+
+
