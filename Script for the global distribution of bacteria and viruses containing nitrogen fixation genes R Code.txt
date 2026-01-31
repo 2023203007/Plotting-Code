@@ -14,7 +14,7 @@ p <- ggplot(world, aes(long, lat)) +
   coord_quickmap()
 #fill is the color of the area in the map, color is the color of the edge of the area.
 p + geom_scatterpie(aes(x=long, y=lat, r=LN), 
-                    data = gudan, cols=c("nifA","nifD","nifE","nifEN","nifH","nifK","nifL","nifM","nifN","nifU","nifZ","anfK","vnfH"), 
+                    data = gudan, cols=c("nifA","nifD","nifE","nifH","nifK","nifL","nifM","nifN","nifU","nifZ","anfK","vnfH"), 
                     legend_name = "type", color=NA, alpha=1) +
   #color is the edge color of the pie chart, alpha is the transparency of the pie chart, and cols is the name of the data column selected for the pie chart.
   geom_scatterpie_legend(gudan$LN, x=-140, y=-60, n=4, labeller = function(x) {round(exp(x-1))}) +
